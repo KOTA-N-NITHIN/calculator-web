@@ -20,7 +20,7 @@ pipeline {
         stage('Build Jar') {
             steps {
                 echo 'Building the Spring Boot application.....'
-                bat 'mvn package'
+                bat 'mvn clean package'
                 echo 'package build'
             }
         }
