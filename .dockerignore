@@ -1,7 +1,7 @@
-# Maven build directories
-target/
-!.mvn/wrapper/maven-wrapper.jar
-.mvn/
+# Ignore Maven build directories except the final jar
+target/*
+!target/calculator-web-1.0.0.jar
+
 
 # Logs
 *.log
