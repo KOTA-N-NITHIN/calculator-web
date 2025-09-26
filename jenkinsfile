@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Docker Hub credentials stored in Jenkins (username/password or token)
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds'
+        DOCKER_HUB_CREDENTIALS = 'dockerhubcredentials'
         DOCKER_IMAGE = 'kotannithin/calculator-web'
         K8S_NAMESPACE = 'default'
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -20,7 +20,7 @@ pipeline {
         stage('Build Jar') {
             steps {
                 echo 'Building the Spring Boot application.....'
-                bat 'mvn clean package'
+                bat 'mvn package'
             }
         }
 
