@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 360px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .inputs input {
+            width: 48%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .operations {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .operations button {
+            width: 48%;
+            padding: 12px 0;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background-color: #7ecf81;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .operations button:hover {
+            background-color: #45a049;
+        }
+
+        #result-box {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e84118;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+
+        @media (max-width: 400px) {
+            .calculator {
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            .inputs input,
+            .operations button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .operations {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Web Calculator</h2>
+        <div class="inputs">
+            <input type="number" id="num1" placeholder="Number 1">
+            <input type="number" id="num2" placeholder="Number 2">
+        </div>
+
+        <div class="operations">
+            <button onclick="calculate('add')">+</button>
+            <button onclick="calculate('subtract')">-</button>
+            <button onclick="calculate('multiply')">×</button>
+            <button onclick="calculate('divide')">÷</button>
+        </div>
+
+        <div id="result-box">Result: <span id="result"></span></div>
+    </div>
+
+    <script>
+        function calculate(operation) {
+            const num1 = document.getElementById("num1").value;
+            const num2 = document.getElementById("num2").value;
+
+            fetch(`/calculator/compute?num1=${num1}&num2=${num2}&operation=${operation}`)
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById("result").textContent = result;
+                })
+                .catch(err => {
+                    document.getElementById("result").textContent = "Error";
+                    console.error(err);
+                });
+        }
+    </script>
+</body>
+</html>

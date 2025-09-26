@@ -1,0 +1,73 @@
+pipeline {
+    agent any
+
+    environment {
+        // Docker Hub credentials stored in Jenkins (username/password or token)
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds'
+        DOCKER_IMAGE = 'kotannithin/calculator-web'
+        K8S_NAMESPACE = 'default'
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out code...'
+                checkout scm
+            }
+        }
+
+        stage('Build Jar') {
+            steps {
+                echo 'Building the Spring Boot application...'
+                bat 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                bat """
+                docker build -t %DOCKER_IMAGE%:%BUILD_NUMBER% .
+                """
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                    bat """
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                    docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying application to Kubernetes...'
+                // Use powershell to replace image tag in deployment.yaml on Windows
+                bat """
+                powershell -Command "(Get-Content k8s\\calculator-deployment.yaml) -replace 'image: %DOCKER_IMAGE%:.*','image: %DOCKER_IMAGE%:%BUILD_NUMBER%' | Set-Content k8s\\calculator-deployment.yaml"
+                
+                kubectl apply -f deployment.yaml
+                """
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo 'Checking deployed pods...'
+                bat "kubectl get pods -n %K8S_NAMESPACE%"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+    }
+}
