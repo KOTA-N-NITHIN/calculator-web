@@ -1,0 +1,39 @@
+# Maven build directories
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+
+# Logs
+*.log
+*.out
+*.err
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.iml
+out/
+.project
+.classpath
+.settings/
+bin/
+.vscode/
+
+# Environment/secrets
+.env
+*.secret
+*.credentials
+*.key
+*.pem
+
+# Swap/temp files
+*.swp
+*.swo
+*.tmp
+
+# Docker temporary files
+*.pid
+*.tar
