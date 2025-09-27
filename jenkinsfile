@@ -35,18 +35,21 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+       stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", 
+                                                passwordVariable: 'DOCKER_PASS', 
+                                                usernameVariable: 'DOCKER_USER')]) {
                     bat """
-                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                    docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
                     """
                     echo 'image pushed'
                 }
             }
-        }
+}
+
 
         stage('Deploy to Kubernetes') {
             steps {
