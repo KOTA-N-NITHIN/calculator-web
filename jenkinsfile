@@ -37,6 +37,7 @@ pipeline {
 
        stage('Push Docker Image') {
             steps {
+                retry(3) {
                 echo 'Pushing Docker image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", 
                                                 passwordVariable: 'DOCKER_PASS', 
@@ -46,6 +47,7 @@ pipeline {
                         docker push %DOCKER_IMAGE%:%BUILD_NUMBER%
                     """
                     echo 'image pushed'
+                }
                 }
             }
 }
